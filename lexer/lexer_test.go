@@ -10,6 +10,7 @@ func TestNextToken(t *testing.T) {
 	input := `ADD R5,R5,R5;
 .END
 #44
+x44
 `
 
 	tests := []struct {
@@ -30,6 +31,8 @@ func TestNextToken(t *testing.T) {
 
 		{token.HASH, "#"},
 		{token.INT, "44"},
+
+		{token.HEX, "x44"},
 	}
 
 	l := New(input)

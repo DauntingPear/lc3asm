@@ -130,6 +130,11 @@ func (l *Lexer) parseLetter() token.Token {
 		tok.Literal = l.readRegister()
 		tok.Type = token.REGISTER
 		return tok
+	} else if isHex(l.ch, l.peekChar()) {
+		fmt.Println("IS HEX")
+		tok.Literal = l.readHex()
+		tok.Type = token.HEX
+		return tok
 	}
 
 	tok.Literal = l.readIdentifier()
@@ -143,4 +148,21 @@ func (l *Lexer) readRegister() string {
 	l.readChar()
 	l.readChar()
 	return l.input[position:l.position]
+}
+
+func (l *Lexer) readHex() string {
+	position := l.position
+	l.readChar()
+	for isDigit(l.ch) {
+		l.readChar()
+	}
+
+	return l.input[position:l.position]
+}
+
+func isHex(ch byte, num byte) bool {
+	if ch == 'x' && isDigit(num) {
+		return true
+	}
+	return false
 }
