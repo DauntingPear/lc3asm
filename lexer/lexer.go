@@ -17,9 +17,7 @@ func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
 
 	if l.ch == '\n' {
-		fmt.Println("NL->DENT", l)
 		tok = l.readIndentation()
-		fmt.Println(tok)
 		if tok.Type == token.DEDENT || tok.Type == token.INDENT {
 			return tok
 		}
