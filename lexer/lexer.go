@@ -87,6 +87,41 @@ func (l *Lexer) skipWhitespace() {
 	}
 }
 
+// Read indentation characters
+func (l *Lexer) readIndentation() token.Token {
+	l.readChar()
+	indents := 0
+
+	// Consumes tab or spaces for counting indentation levels
+	for l.ch == '\t' || l.ch == ' ' {
+		indents++
+		l.readChar()
+	}
+
+	var tok token.Token
+
+	// Checks if indentation has decreased
+	if indents < l.indentation {
+		fmt.Println("lt")
+		l.indentation = l.indentation - indents
+		tok.Type = token.DEDENT
+		tok.Literal = "DEDENT"
+		return tok
+	}
+
+	// Checks if indentation has incresed
+	if indents > l.indentation {
+		fmt.Println("gt")
+		l.indentation = l.indentation + indents
+		tok.Type = token.INDENT
+		tok.Literal = "INDENT"
+		return tok
+	}
+
+	// If no change in indentation, return empty token
+	return tok
+}
+
 func (l *Lexer) readNumber() string {
 	position := l.position
 	for isDigit(l.ch) {
