@@ -124,14 +124,11 @@ func isRegister(r byte, num byte) bool {
 
 func (l *Lexer) parseLetter() token.Token {
 	var tok token.Token
-	fmt.Printf("%c%c%c\n", l.ch, l.peekChar(), l.peekChars(1))
 	if isRegister(l.ch, l.peekChar()) {
-		fmt.Println("IS REGISTER")
 		tok.Literal = l.readRegister()
 		tok.Type = token.REGISTER
 		return tok
 	} else if isHex(l.ch, l.peekChar()) {
-		fmt.Println("IS HEX")
 		tok.Literal = l.readHex()
 		tok.Type = token.HEX
 		return tok
