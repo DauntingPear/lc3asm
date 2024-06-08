@@ -28,6 +28,9 @@ const (
 
 	INT = "INT"
 	HEX = "HEX"
+
+	INDENT = "INDENT"
+	DEDENT = "DEDENT"
 )
 
 var keywords = map[string]TokenType{
