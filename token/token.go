@@ -66,10 +66,39 @@ const (
 )
 
 var keywords = map[string]TokenType{
-	"ADD": ADD,
-	"NOT": NOT,
-	"AND": AND,
-	"END": END,
+	// Opcodes
+	"ADD":  ADD,
+	"NOT":  NOT,
+	"AND":  AND,
+	"LD":   LD,
+	"LDI":  LDI,
+	"LDR":  LDR,
+	"LEA":  LEA,
+	"ST":   ST,
+	"STI":  STI,
+	"STR":  STR,
+	"BR":   BR,
+	"JMP":  JMP,
+	"JSR":  JSR,
+	"JSRR": JSRR,
+	"RET":  RET,
+	"RTI":  RTI,
+
+	// Directives
+	"END":     END,
+	"ORIG":    ORIG,
+	"FILL":    FILL,
+	"BLKW":    BLKW,
+	"STRINGZ": STRINGZ,
+
+	// TRAPS
+	"TRAP":  TRAP,
+	"GETC":  GETC,
+	"OUT":   OUT,
+	"PUTS":  PUTS,
+	"IN":    IN,
+	"PUTSP": PUTSP,
+	"HALT":  HALT,
 }
 
 func LookupIdent(ident string) TokenType {
