@@ -10,6 +10,7 @@ type Lexer struct {
 	position     int
 	readPosition int
 	ch           byte
+	indentation  int
 }
 
 func (l *Lexer) NextToken() token.Token {
