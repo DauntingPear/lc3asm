@@ -11,24 +11,56 @@ const (
 	ILLEGAL = "ILLEGAL"
 	EOF     = "EOF"
 
+	// Symbols
 	COMMA     = ","
 	SEMICOLON = ";"
 	COLON     = ":"
 	PERIOD    = "."
 	HASH      = "#"
 
+	// Labels and registers
 	IDENT    = "IDENT"    // Labels
 	REGISTER = "REGISTER" // Registers R0-8
 
-	ADD = "ADD"
-	NOT = "NOT"
-	AND = "AND"
+	// Opcodes
+	ADD  = "ADD"
+	NOT  = "NOT"
+	AND  = "AND"
+	LD   = "LD"
+	LDI  = "LDI"
+	LDR  = "LDR"
+	LEA  = "LEA"
+	ST   = "ST"
+	STI  = "STI"
+	STR  = "STR"
+	BR   = "BR"
+	JMP  = "JMP"
+	JSR  = "JSR"
+	JSRR = "JSRR"
+	RET  = "RET"
+	RTI  = "RTI"
 
-	END = "END"
+	// Directives
+	END     = "END"
+	FILL    = "FILL"
+	BLKW    = "BLKW"
+	STRINGZ = "STRINGZ"
+	ORIG    = "ORIG"
 
+	// Traps
+	GETC  = "GETC"
+	OUT   = "OUT"
+	PUTS  = "PUTS"
+	IN    = "IN"
+	PUTSP = "PUTSP"
+	HALT  = "HALT"
+	TRAP  = "TRAP"
+
+	// Number Types
 	INT = "INT"
 	HEX = "HEX"
 
+	// Indentation
 	INDENT = "INDENT"
 	DEDENT = "DEDENT"
 )
