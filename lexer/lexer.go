@@ -35,6 +35,14 @@ func (l *Lexer) NextToken() token.Token {
 		tok = newToken(token.COLON, l.ch)
 	case '#':
 		tok = newToken(token.HASH, l.ch)
+	case '-':
+		tok.Literal = string(l.ch)
+		if isDigit(l.peekChar()) {
+			l.readChar()
+			tok.Literal = tok.Literal + l.readNumber()
+			tok.Type = token.INT
+			return tok
+		}
 	case 0:
 		tok.Literal = ""
 		tok.Type = token.EOF
