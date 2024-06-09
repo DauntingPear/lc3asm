@@ -18,6 +18,7 @@ const (
 	PERIOD    = "."
 	HASH      = "#"
 	MINUS     = "-"
+	QUOTE     = `"`
 
 	// Keywords
 	IDENT     = "IDENT"    // Labels
