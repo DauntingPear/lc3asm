@@ -40,7 +40,12 @@ func (l *Lexer) NextToken() token.Token {
 		tok.Type = token.EOF
 	default:
 		if isLetter(l.ch) {
-			tok = l.parseLetter()
+			tok.Literal = l.readIdentifier()
+			if isHex(tok.Literal) {
+				tok.Type = token.HEX
+				return tok
+			}
+			tok.Type = token.LookupIdent(tok.Literal)
 			return tok
 		} else if isDigit(l.ch) {
 			tok.Type = token.INT
