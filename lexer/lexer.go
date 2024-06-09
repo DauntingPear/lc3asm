@@ -175,9 +175,20 @@ func (l *Lexer) readHex() string {
 	return l.input[position:l.position]
 }
 
-func isHex(ch byte, num byte) bool {
-	if ch == 'x' && isDigit(num) {
-		return true
+func isHex(literal string) bool {
+	return literal[0] == 'x' && isNumber(literal[1:])
+}
+
+func isNumber(substr string) bool {
+	for _, ch := range substr {
+		if !isDigit(byte(ch)) {
+			return false
+		}
 	}
-	return false
+	return true
+}
+
+func (l *Lexer) parseBranch() token.Token {
+	l.readChar()
+	return token.Token{}
 }
