@@ -9,7 +9,7 @@ import (
 func TestNextToken(t *testing.T) {
 	input := `ADD R5,R5,R5;
 .END
-#44
+#-44
 x44
 `
 
@@ -30,7 +30,7 @@ x44
 		{token.END, "END"},
 
 		{token.HASH, "#"},
-		{token.INT, "44"},
+		{token.INT, "-44"},
 
 		{token.HEX, "x44"},
 	}
