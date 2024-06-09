@@ -19,43 +19,12 @@ const (
 	HASH      = "#"
 	MINUS     = "-"
 
-	// Labels and registers
-	IDENT    = "IDENT"    // Labels
-	REGISTER = "REGISTER" // Registers R0-8
-
-	// Opcodes
-	ADD  = "ADD"
-	NOT  = "NOT"
-	AND  = "AND"
-	LD   = "LD"
-	LDI  = "LDI"
-	LDR  = "LDR"
-	LEA  = "LEA"
-	ST   = "ST"
-	STI  = "STI"
-	STR  = "STR"
-	BR   = "BR"
-	JMP  = "JMP"
-	JSR  = "JSR"
-	JSRR = "JSRR"
-	RET  = "RET"
-	RTI  = "RTI"
-
-	// Directives
-	END     = "END"
-	FILL    = "FILL"
-	BLKW    = "BLKW"
-	STRINGZ = "STRINGZ"
-	ORIG    = "ORIG"
-
-	// Traps
-	GETC  = "GETC"
-	OUT   = "OUT"
-	PUTS  = "PUTS"
-	IN    = "IN"
-	PUTSP = "PUTSP"
-	HALT  = "HALT"
-	TRAP  = "TRAP"
+	// Keywords
+	IDENT     = "IDENT"    // Labels
+	REGISTER  = "REGISTER" // Registers R0-8
+	OPCODE    = "OPCODE"
+	DIRECTIVE = "DIRECTIVE"
+	TRAP      = "TRAP"
 
 	// Number Types
 	INT = "INT"
@@ -68,38 +37,67 @@ const (
 
 var keywords = map[string]TokenType{
 	// Opcodes
-	"ADD":  ADD,
-	"NOT":  NOT,
-	"AND":  AND,
-	"LD":   LD,
-	"LDI":  LDI,
-	"LDR":  LDR,
-	"LEA":  LEA,
-	"ST":   ST,
-	"STI":  STI,
-	"STR":  STR,
-	"BR":   BR,
-	"JMP":  JMP,
-	"JSR":  JSR,
-	"JSRR": JSRR,
-	"RET":  RET,
-	"RTI":  RTI,
+	"ADD":  OPCODE,
+	"NOT":  OPCODE,
+	"AND":  OPCODE,
+	"LD":   OPCODE,
+	"LDI":  OPCODE,
+	"LDR":  OPCODE,
+	"LEA":  OPCODE,
+	"ST":   OPCODE,
+	"STI":  OPCODE,
+	"STR":  OPCODE,
+	"BR":   OPCODE,
+	"JMP":  OPCODE,
+	"JSR":  OPCODE,
+	"JSRR": OPCODE,
+	"RET":  OPCODE,
+	"RTI":  OPCODE,
 
 	// Directives
-	"END":     END,
-	"ORIG":    ORIG,
-	"FILL":    FILL,
-	"BLKW":    BLKW,
-	"STRINGZ": STRINGZ,
+	"END":     DIRECTIVE,
+	"ORIG":    DIRECTIVE,
+	"FILL":    DIRECTIVE,
+	"BLKW":    DIRECTIVE,
+	"STRINGZ": DIRECTIVE,
+	"BEGIN":   DIRECTIVE,
 
 	// TRAPS
 	"TRAP":  TRAP,
-	"GETC":  GETC,
-	"OUT":   OUT,
-	"PUTS":  PUTS,
-	"IN":    IN,
-	"PUTSP": PUTSP,
-	"HALT":  HALT,
+	"GETC":  TRAP,
+	"OUT":   TRAP,
+	"PUTS":  TRAP,
+	"IN":    TRAP,
+	"PUTSP": TRAP,
+	"HALT":  TRAP,
+
+	// Registers
+	"R0": REGISTER,
+	"R1": REGISTER,
+	"R2": REGISTER,
+	"R3": REGISTER,
+	"R4": REGISTER,
+	"R5": REGISTER,
+	"R6": REGISTER,
+	"R7": REGISTER,
+
+	"BRn":   OPCODE,
+	"BRnz":  OPCODE,
+	"BRnzp": OPCODE,
+	"BRnp":  OPCODE,
+	"BRnpz": OPCODE,
+
+	"BRz":   OPCODE,
+	"BRzn":  OPCODE,
+	"BRznp": OPCODE,
+	"BRzp":  OPCODE,
+	"BRzpn": OPCODE,
+
+	"BRp":   OPCODE,
+	"BRpz":  OPCODE,
+	"BRpzn": OPCODE,
+	"BRpn":  OPCODE,
+	"BRpnz": OPCODE,
 }
 
 func LookupIdent(ident string) TokenType {
