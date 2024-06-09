@@ -154,30 +154,8 @@ func (l *Lexer) peekChars(num int) byte {
 	}
 }
 
-func isRegister(r byte, num byte) bool {
-	if r == 'R' && isDigit(num) {
-		return true
-	} else {
-		return false
-	}
-}
-
-func (l *Lexer) parseLetter() token.Token {
-	var tok token.Token
-	if isRegister(l.ch, l.peekChar()) {
-		tok.Literal = l.readRegister()
-		tok.Type = token.REGISTER
-		return tok
-	} else if isHex(l.ch, l.peekChar()) {
-		tok.Literal = l.readHex()
-		tok.Type = token.HEX
-		return tok
-	}
-
-	tok.Literal = l.readIdentifier()
-	tok.Type = token.LookupIdent(tok.Literal)
-
-	return tok
+func isRegister(literal string) bool {
+	return len(literal) == 2 && literal[0] == 'R' && isDigit(literal[1])
 }
 
 func (l *Lexer) readRegister() string {
