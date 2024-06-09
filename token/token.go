@@ -26,6 +26,7 @@ const (
 	OPCODE    = "OPCODE"
 	DIRECTIVE = "DIRECTIVE"
 	TRAP      = "TRAP"
+	COMMENT   = "COMMENT"
 
 	// Number Types
 	INT = "INT"
