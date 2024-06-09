@@ -205,3 +205,7 @@ func (l *Lexer) parseBranch() token.Token {
 	l.readChar()
 	return token.Token{}
 }
+
+func isWhitespace(ch byte) bool {
+	return ch == ' ' || ch == '\t' || ch == '\r' || ch == '\n'
+}
