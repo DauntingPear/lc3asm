@@ -17,6 +17,7 @@ const (
 	COLON     = ":"
 	PERIOD    = "."
 	HASH      = "#"
+	MINUS     = "-"
 
 	// Labels and registers
 	IDENT    = "IDENT"    // Labels
