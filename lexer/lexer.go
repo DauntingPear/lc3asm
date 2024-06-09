@@ -1,7 +1,6 @@
 package lexer
 
 import (
-	"fmt"
 	"lc3asm-parser/token"
 )
 
@@ -109,7 +108,6 @@ func (l *Lexer) readIndentation() token.Token {
 
 	// Checks if indentation has decreased
 	if indents < l.indentation {
-		fmt.Println("lt")
 		l.indentation = l.indentation - indents
 		tok.Type = token.DEDENT
 		tok.Literal = "DEDENT"
@@ -118,7 +116,6 @@ func (l *Lexer) readIndentation() token.Token {
 
 	// Checks if indentation has incresed
 	if indents > l.indentation {
-		fmt.Println("gt")
 		l.indentation = l.indentation + indents
 		tok.Type = token.INDENT
 		tok.Literal = "INDENT"
