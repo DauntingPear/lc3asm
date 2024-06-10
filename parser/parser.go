@@ -49,9 +49,17 @@ func (p *Parser) parseStatement() ast.Statement {
 	case token.OPCODE:
 		stmt := p.parseOpcodeSatement()
 		return stmt
+	case token.DIRECTIVE:
+		stmt := p.parseDirectiveStatement()
+		return stmt
 	default:
 		return nil
 	}
+}
+
+// TODO: Write this function
+func (p *Parser) parseDirectiveStatement() ast.Statement {
+	return nil
 }
 
 func (p *Parser) parseOpcodeSatement() ast.Statement {
