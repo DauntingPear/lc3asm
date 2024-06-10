@@ -68,11 +68,18 @@ func (p *Parser) parseOpcodeSatement() ast.Statement {
 	case "STR", "LDR":
 		stmt := p.parseTwoRegisterOffsetStatement()
 		return stmt
+	case "JMP", "JSRR":
+		stmt := p.parseSingleRegisterStatement()
+		return stmt
 	default:
 		return nil
 	}
 }
 
+// TODO: Write this function
+func (p *Parser) parseSingleRegisterStatement() ast.Statement {
+	return nil
+}
 func (p *Parser) curTokenIs(t token.TokenType) bool {
 	return p.curToken.Type == t
 }
