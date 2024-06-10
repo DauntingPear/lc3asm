@@ -56,10 +56,10 @@ type RegisterLabelStatement struct {
 	Label    *Label
 }
 
-// LDR, STR
 func (rls *RegisterLabelStatement) statementNode()       {}
 func (rls *RegisterLabelStatement) TokenLiteral() string { return rls.Token.Literal }
 
+// LDR, STR
 type TwoRegisterOffset struct {
 	Token         token.Token // The opcode
 	LeftRegister  *Register
