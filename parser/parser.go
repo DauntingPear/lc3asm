@@ -54,6 +54,25 @@ func (p *Parser) parseStatement() ast.Statement {
 	}
 }
 
+func (p *Parser) parseOpcodeSatement() ast.Statement {
+	switch p.curToken.Literal {
+	case "ADD", "AND":
+		stmt := p.parseOperationOpcodeStatement()
+		return stmt
+	case "NOT":
+		stmt := p.parseTwoRegisterStatement()
+		return stmt
+	case "ST", "STI", "LD", "LDI", "LEA":
+		stmt := p.parseRegisterLabelStatement()
+		return stmt
+	case "STR", "LDR":
+		stmt := p.parseTwoRegisterOffsetStatement()
+		return stmt
+	default:
+		return nil
+	}
+}
+
 func (p *Parser) curTokenIs(t token.TokenType) bool {
 	return p.curToken.Type == t
 }
@@ -71,18 +90,6 @@ func (p *Parser) expectPeek(t token.TokenType) bool {
 	}
 }
 
-func (p *Parser) parseOpcodeSatement() ast.Statement {
-	switch p.curToken.Literal {
-	case "ADD", "AND":
-		stmt := p.parseOperationOpcodeStatement()
-		return stmt
-	case "NOT":
-		stmt := p.parseTwoRegisterStatement()
-		return stmt
-	case "ST", "STI", "LD", "LDI", "LEA":
-		stmt := p.parseRegisterLabelStatement()
-		return stmt
-	default:
 		return nil
 	}
 }
