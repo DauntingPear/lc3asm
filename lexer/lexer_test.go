@@ -165,7 +165,8 @@ BRp
 BRz
 BRnp
 BR
-BRfsafda`
+BRfsafda
+BRnzp LABEL`
 
 	tests := []struct {
 		expectedType    token.TokenType
@@ -178,6 +179,8 @@ BRfsafda`
 		{token.OPCODE, "BRnp"},
 		{token.OPCODE, "BR"},
 		{token.IDENT, "BRfsafda"},
+		{token.OPCODE, "BRnzp"},
+		{token.IDENT, "LABEL"},
 	}
 
 	l := New(input)
