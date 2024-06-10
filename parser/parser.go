@@ -52,6 +52,9 @@ func (p *Parser) parseStatement() ast.Statement {
 	case token.DIRECTIVE:
 		stmt := p.parseDirectiveStatement()
 		return stmt
+	case token.TRAP:
+		stmt := p.parseTrapStatement()
+		return stmt
 	default:
 		return nil
 	}
@@ -59,6 +62,11 @@ func (p *Parser) parseStatement() ast.Statement {
 
 // TODO: Write this function
 func (p *Parser) parseDirectiveStatement() ast.Statement {
+	return nil
+}
+
+// TODO: Write this function
+func (p *Parser) parseTrapStatement() ast.Statement {
 	return nil
 }
 
