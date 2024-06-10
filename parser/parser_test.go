@@ -181,3 +181,69 @@ func testRegisterLabelStatement(t *testing.T, s ast.Statement, ol string, rl str
 
 	return true
 }
+
+func TestTwoRegisterOffsetStatement(t *testing.T) {
+	input := `
+STR R1, R3, #21
+LDR R2, R4, #10
+`
+
+	l := lexer.New(input)
+	p := New(l)
+
+	program := p.ParseProgram()
+
+	if program == nil {
+		t.Fatalf("ParseProgram() returned nil")
+	}
+
+	if len(program.Statements) != 2 {
+		t.Fatalf("program.Statements does not contain 2 statements. got=%d", len(program.Statements))
+	}
+
+	tests := []struct {
+		expectedOpcodeLiteral        string
+		expectedLeftRegisterLiteral  string
+		expectedRightRegisterLiteral string
+		expectedIntegerLiteralValue  int
+	}{
+		{"STR", "R1", "R3", 21},
+		{"LDR", "R2", "R4", 10},
+	}
+
+	for i, tt := range tests {
+		stmt := program.Statements[i]
+		if !testTwoRegisterOffsetStatement(t, stmt, tt.expectedOpcodeLiteral, tt.expectedLeftRegisterLiteral, tt.expectedRightRegisterLiteral, tt.expectedIntegerLiteralValue) {
+			return
+		}
+	}
+}
+
+func testTwoRegisterOffsetStatement(t *testing.T, s ast.Statement, ol string, ll string, rl string, il int) bool {
+	if s.TokenLiteral() != ol {
+		t.Errorf("s.TokenLiteral not '%s'. got=%q", ol, s.TokenLiteral())
+		return false
+	}
+
+	tros, ok := s.(*ast.TwoRegisterOffsetStatement)
+	if !ok {
+		t.Errorf("s not *ast.ThreeRegisterStatement. got=%T", s)
+		return false
+	}
+
+	if tros.LeftRegister.TokenLiteral() != ll {
+		t.Errorf("rls.LeftRegister.TokenLiteral not '%s'. got=%s", ll, tros.LeftRegister.TokenLiteral())
+		return false
+	}
+
+	if tros.RightRegister.TokenLiteral() != rl {
+		t.Errorf("rls.RightRegister.TokenLiteral not '%s'. got=%s", rl, tros.RightRegister.TokenLiteral())
+		return false
+	}
+
+	if tros.Offset != il {
+		t.Errorf("rls.Label.TokenLiteral not '%s'. got=%d", ll, tros.Offset)
+	}
+
+	return true
+}
