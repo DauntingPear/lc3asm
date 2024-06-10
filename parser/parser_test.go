@@ -182,7 +182,7 @@ func testRegisterLabelStatement(t *testing.T, s ast.Statement, ol string, rl str
 	return true
 }
 
-func TestTwoRegisterOffsetStatement(t *testing.T) {
+func TestTwoRegisterOffsetStatements(t *testing.T) {
 	input := `
 STR R1, R3, #21
 LDR R2, R4, #10
