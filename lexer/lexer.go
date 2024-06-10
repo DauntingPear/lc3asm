@@ -219,7 +219,7 @@ func isWhitespace(ch byte) bool {
 func (l *Lexer) readComment() string {
 	position := l.position
 	l.readChar()
-	for l.ch != '\n' {
+	for l.ch != '\n' && l.ch != 0 {
 		l.readChar()
 	}
 
