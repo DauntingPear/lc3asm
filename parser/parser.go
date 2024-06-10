@@ -90,8 +90,76 @@ func (p *Parser) expectPeek(t token.TokenType) bool {
 	}
 }
 
+func (p *Parser) parseTwoRegisterOffsetStatement() ast.Statement {
+	opcode := p.curToken
+
+	if !p.expectPeek(token.REGISTER) {
 		return nil
 	}
+
+	registerID := string(p.curToken.Literal[1])
+	num, err := strconv.Atoi(registerID)
+	if err != nil {
+		fmt.Println("could not parse r1 number")
+		return nil
+	}
+
+	leftRegister := &ast.Register{Token: p.curToken, ID: num}
+	fmt.Println(leftRegister)
+
+	if !p.expectPeek(token.COMMA) {
+		fmt.Println("ERR: expected comma after register")
+		return nil
+	}
+
+	if !p.expectPeek(token.REGISTER) {
+		fmt.Println("ERR: expected register after comma")
+		return nil
+	}
+
+	registerID = string(p.curToken.Literal[1])
+	num, err = strconv.Atoi(registerID)
+	if err != nil {
+		fmt.Println("could not parse r2 number")
+		return nil
+	}
+
+	rightRegister := &ast.Register{Token: p.curToken, ID: num}
+	fmt.Println(rightRegister)
+
+	if !p.expectPeek(token.COMMA) {
+		fmt.Println("ERR: expected comma after register")
+		return nil
+	}
+
+	if !p.expectPeek(token.HASH) {
+		fmt.Println("ERR: expected hash")
+		return nil
+	}
+
+	if !p.expectPeek(token.INT) {
+		fmt.Println("ERR: expected int")
+		return nil
+	}
+
+	fmt.Println(p.curToken.Literal)
+	offsetValue := string(p.curToken.Literal)
+	offset, err := strconv.Atoi(offsetValue)
+	if err != nil {
+		fmt.Println("could not parse int")
+		return nil
+	}
+	fmt.Println(offsetValue)
+	fmt.Println(offset)
+
+	stmt := &ast.TwoRegisterOffsetStatement{Token: opcode,
+		LeftRegister:  leftRegister,
+		RightRegister: rightRegister,
+		Offset:        offset,
+	}
+	fmt.Println(stmt)
+
+	return stmt
 }
 
 func (p *Parser) parseRegisterLabelStatement() ast.Statement {
