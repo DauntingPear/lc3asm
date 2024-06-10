@@ -79,9 +79,49 @@ func (p *Parser) parseOpcodeSatement() ast.Statement {
 	case "NOT":
 		stmt := p.parseTwoRegisterStatement()
 		return stmt
+	case "ST", "STI", "LD", "LDI", "LEA":
+		stmt := p.parseRegisterLabelStatement()
+		return stmt
 	default:
 		return nil
 	}
+}
+
+func (p *Parser) parseRegisterLabelStatement() ast.Statement {
+	opcode := p.curToken
+
+	if !p.expectPeek(token.REGISTER) {
+		return nil
+	}
+
+	registerID := string(p.curToken.Literal[1])
+	num, err := strconv.Atoi(registerID)
+	if err != nil {
+		return nil
+	}
+
+	register := &ast.Register{Token: p.curToken, ID: num}
+
+	if !p.expectPeek(token.COMMA) {
+		fmt.Println("ERR: expected comma after register")
+		return nil
+	}
+
+	if !p.expectPeek(token.IDENT) {
+		fmt.Println("ERR: expected label at label")
+		return nil
+	}
+
+	label := &ast.Label{Token: p.curToken, Value: p.curToken.Literal}
+
+	stmt := &ast.RegisterLabelStatement{
+		Token:    opcode,
+		Register: register,
+		Label:    label,
+	}
+
+	return stmt
+
 }
 
 func (p *Parser) parseTwoRegisterStatement() ast.Statement {
