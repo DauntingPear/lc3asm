@@ -30,7 +30,13 @@ func (l *Lexer) NextToken() token.Token {
 	case '.':
 		tok = newToken(token.PERIOD, l.ch)
 	case ';':
-		tok = newToken(token.SEMICOLON, l.ch)
+		tok.Literal = l.readComment()
+		if tok.Literal == ";" {
+			tok.Type = token.SEMICOLON
+		} else {
+			tok.Type = token.COMMENT
+		}
+		return tok
 	case ':':
 		tok = newToken(token.COLON, l.ch)
 	case '#':
@@ -208,4 +214,14 @@ func (l *Lexer) parseBranch() token.Token {
 
 func isWhitespace(ch byte) bool {
 	return ch == ' ' || ch == '\t' || ch == '\r' || ch == '\n'
+}
+
+func (l *Lexer) readComment() string {
+	position := l.position
+	l.readChar()
+	for l.ch != '\n' {
+		l.readChar()
+	}
+
+	return l.input[position:l.position]
 }
