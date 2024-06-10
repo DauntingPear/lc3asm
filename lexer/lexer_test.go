@@ -11,6 +11,7 @@ func TestNextToken(t *testing.T) {
 .END
 #44
 x44
+ADD R3,R4,R5
 `
 
 	tests := []struct {
@@ -18,7 +19,6 @@ x44
 		expectedLiteral string
 	}{
 		{token.OPCODE, "ADD"},
-
 		{token.REGISTER, "R5"},
 		{token.COMMA, ","},
 		{token.REGISTER, "R5"},
@@ -33,6 +33,13 @@ x44
 		{token.INT, "44"},
 
 		{token.HEX, "x44"},
+
+		{token.OPCODE, "ADD"},
+		{token.REGISTER, "R3"},
+		{token.COMMA, ","},
+		{token.REGISTER, "R4"},
+		{token.COMMA, ","},
+		{token.REGISTER, "R5"},
 	}
 
 	l := New(input)
