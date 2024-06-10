@@ -71,14 +71,14 @@ func (tro *TwoRegisterOffset) statementNode()       {}
 func (tro *TwoRegisterOffset) TokenLiteral() string { return tro.Token.Literal }
 
 // NOT
-type TwoRegister struct {
+type TwoRegisterStatement struct {
 	Token          token.Token // The opcode
 	DataRegister   *Register
 	SourceRegister *Register
 }
 
-func (tr *TwoRegister) statementNode()       {}
-func (tr *TwoRegister) TokenLiteral() string { return tr.Token.Literal }
+func (tr *TwoRegisterStatement) statementNode()       {}
+func (tr *TwoRegisterStatement) TokenLiteral() string { return tr.Token.Literal }
 
 type Opcode struct {
 	Token   token.Token
