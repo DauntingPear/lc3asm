@@ -60,15 +60,15 @@ func (rls *RegisterLabelStatement) statementNode()       {}
 func (rls *RegisterLabelStatement) TokenLiteral() string { return rls.Token.Literal }
 
 // LDR, STR
-type TwoRegisterOffset struct {
+type TwoRegisterOffsetStatement struct {
 	Token         token.Token // The opcode
 	LeftRegister  *Register
 	RightRegister *Register
 	Offset        int
 }
 
-func (tro *TwoRegisterOffset) statementNode()       {}
-func (tro *TwoRegisterOffset) TokenLiteral() string { return tro.Token.Literal }
+func (tro *TwoRegisterOffsetStatement) statementNode()       {}
+func (tro *TwoRegisterOffsetStatement) TokenLiteral() string { return tro.Token.Literal }
 
 // NOT
 type TwoRegisterStatement struct {
