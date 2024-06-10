@@ -77,9 +77,17 @@ func (p *Parser) parseOpcodeSatement() ast.Statement {
 		"BRz", "BRzp", "BRzpn", "BRzn", "BRznp":
 		stmt := p.parseSingleLabelStatement()
 		return stmt
+	case "RET", "RTI":
+		stmt := p.parseNoArgStatement()
+		return stmt
 	default:
 		return nil
 	}
+}
+
+// TODO: Write this function
+func (p *Parser) parseNoArgStatement() ast.Statement {
+	return nil
 }
 
 // TODO: Write this function
