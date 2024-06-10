@@ -115,3 +115,69 @@ func testTwoRegisterStatement(t *testing.T, s ast.Statement, ol string, rls [2]s
 
 	return true
 }
+
+func TestRegisterLabelStatements(t *testing.T) {
+	input := `
+LD R5, LABEL
+LDI R2, MYLABEL
+LEA R7, SomeLabel
+ST R0, aLabel
+STI R2, LabelHere
+`
+
+	l := lexer.New(input)
+	p := New(l)
+
+	program := p.ParseProgram()
+
+	if program == nil {
+		t.Fatalf("ParseProgram() returned nil")
+	}
+
+	if len(program.Statements) != 5 {
+		t.Fatalf("program.Statements does not contain 5 statements. got=%d", len(program.Statements))
+	}
+
+	tests := []struct {
+		expectedOpcodeLiteral   string
+		expectedRegisterLiteral string
+		expectedLabelLiteral    string
+	}{
+		{"LD", "R5", "LABEL"},
+		{"LDI", "R2", "MYLABEL"},
+		{"LEA", "R7", "SomeLabel"},
+		{"ST", "R0", "aLabel"},
+		{"STI", "R2", "LabelHere"},
+	}
+
+	for i, tt := range tests {
+		stmt := program.Statements[i]
+		if !testRegisterLabelStatement(t, stmt, tt.expectedOpcodeLiteral, tt.expectedRegisterLiteral, tt.expectedLabelLiteral) {
+			return
+		}
+	}
+}
+
+func testRegisterLabelStatement(t *testing.T, s ast.Statement, ol string, rl string, ll string) bool {
+	if s.TokenLiteral() != ol {
+		t.Errorf("s.TokenLiteral not '%s'. got=%q", ol, s.TokenLiteral())
+		return false
+	}
+
+	rls, ok := s.(*ast.RegisterLabelStatement)
+	if !ok {
+		t.Errorf("s not *ast.ThreeRegisterStatement. got=%T", s)
+		return false
+	}
+
+	if rls.Register.TokenLiteral() != rl {
+		t.Errorf("rls.Register.TokenLiteral not '%s'. got=%s", rl, rls.Register.TokenLiteral())
+		return false
+	}
+
+	if rls.Label.TokenLiteral() != ll {
+		t.Errorf("rls.Label.TokenLiteral not '%s'. got=%s", ll, rls.Label.TokenLiteral())
+	}
+
+	return true
+}
