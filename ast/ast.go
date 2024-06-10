@@ -1,5 +1,7 @@
 package ast
 
+import "lc3asm-parser/token"
+
 type Node interface {
 	TokenLiteral() string
 }
@@ -28,8 +30,7 @@ func (p *Program) TokenLiteral() string {
 
 // ADD, AND
 type ThreeRegisterStatement struct {
-	Token           token.Token
-	Opcode          *Opcode
+	Token           token.Token // The opcode
 	DataRegister    *Register
 	SourceRegisters [2]*Register
 }
@@ -39,8 +40,7 @@ func (trs *ThreeRegisterStatement) TokenLiteral() string { return trs.Token.Lite
 
 // ADD_i, AND_i
 type TwoRegisterImmediate struct {
-	Token          token.Token
-	Opcode         *Opcode
+	Token          token.Token // The opcode
 	DataRegister   *Register
 	SourceRegister *Register
 	Immediate      int
@@ -51,8 +51,7 @@ func (tri *TwoRegisterImmediate) TokenLiteral() string { return tri.Token.Litera
 
 // LD, LDI, LEA, ST, STI
 type RegisterLabelStatement struct {
-	Token    token.Token
-	Opcode   *Opcode
+	Token    token.Token // The opcode
 	Register *Register
 	Label    *Label
 }
@@ -62,8 +61,7 @@ func (rls *RegisterLabelStatement) statementNode()       {}
 func (rls *RegisterLabelStatement) TokenLiteral() string { return rls.Token.Literal }
 
 type TwoRegisterOffset struct {
-	Token         token.Token
-	Opcode        *Opcode
+	Token         token.Token // The opcode
 	LeftRegister  *Register
 	RightRegister *Register
 	Offset        int
@@ -74,8 +72,7 @@ func (tro *TwoRegisterOffset) TokenLiteral() string { return tro.Token.Literal }
 
 // NOT
 type TwoRegister struct {
-	Token          token.Token
-	Opcode         *Opcode
+	Token          token.Token // The opcode
 	DataRegister   *Register
 	SourceRegister *Register
 }
