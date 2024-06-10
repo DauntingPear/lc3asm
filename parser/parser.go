@@ -71,6 +71,12 @@ func (p *Parser) parseOpcodeSatement() ast.Statement {
 	case "JMP", "JSRR":
 		stmt := p.parseSingleRegisterStatement()
 		return stmt
+	case "JSR", "BR",
+		"BRn", "BRnz", "BRnzp", "BRnp", "BRnpz",
+		"BRp", "BRpn", "BRpnz", "BRpz", "BRpzn",
+		"BRz", "BRzp", "BRzpn", "BRzn", "BRznp":
+		stmt := p.parseSingleLabelStatement()
+		return stmt
 	default:
 		return nil
 	}
@@ -80,6 +86,12 @@ func (p *Parser) parseOpcodeSatement() ast.Statement {
 func (p *Parser) parseSingleRegisterStatement() ast.Statement {
 	return nil
 }
+
+// TODO: Write this function
+func (p *Parser) parseSingleLabelStatement() ast.Statement {
+	return nil
+}
+
 func (p *Parser) curTokenIs(t token.TokenType) bool {
 	return p.curToken.Type == t
 }
