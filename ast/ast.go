@@ -116,3 +116,12 @@ type BranchStatement struct {
 
 func (b *BranchStatement) statementNode()       {}
 func (b *BranchStatement) TokenLiteral() string { return b.Token.Literal }
+
+// JSR
+type SingleLabelStatement struct {
+	Token token.Token
+	Label *Label
+}
+
+func (sls *SingleLabelStatement) statementNode()       {}
+func (sls *SingleLabelStatement) TokenLiteral() string { return sls.Token.Literal }
