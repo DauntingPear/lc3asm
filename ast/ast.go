@@ -104,3 +104,15 @@ type Label struct {
 
 func (l *Label) statementNode()       {}
 func (l *Label) TokenLiteral() string { return l.Token.Literal }
+
+// BR
+type BranchStatement struct {
+	Token token.Token
+	N     bool
+	Z     bool
+	P     bool
+	Label *Label
+}
+
+func (b *BranchStatement) statementNode()       {}
+func (b *BranchStatement) TokenLiteral() string { return b.Token.Literal }

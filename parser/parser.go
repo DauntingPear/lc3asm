@@ -113,7 +113,57 @@ func (p *Parser) parseSingleRegisterStatement() ast.Statement {
 
 // TODO: Write this function
 func (p *Parser) parseSingleLabelStatement() ast.Statement {
-	return nil
+	var stmt ast.Statement
+
+	if isBR(p.curToken.Literal) {
+		stmt = p.parseBRStatement()
+	} else {
+		stmt = p.parseJSRStatement()
+	}
+
+	return stmt
+}
+
+func (p *Parser) parseBRStatement() ast.Statement {
+	opcode := p.curToken
+
+	stmt := &ast.BranchStatement{Token: opcode}
+
+	if len(p.curToken.Literal) == 2 {
+		stmt.N = true
+		stmt.Z = true
+		stmt.P = true
+	} else {
+		branches := p.curToken.Literal[1:]
+		for _, ch := range branches {
+			switch ch {
+			case 'n':
+				stmt.N = true
+			case 'z':
+				stmt.Z = true
+			case 'p':
+				stmt.P = true
+			}
+		}
+	}
+
+	return stmt
+}
+
+func (p *Parser) parseJSRStatement() ast.Statement {
+	var stmt ast.Statement
+
+	return stmt
+}
+
+func isBR(literal string) bool {
+	if len(literal) >= 2 {
+		if literal[0] == 'B' && literal[1] == 'R' {
+			return true
+		}
+	}
+
+	return false
 }
 
 func (p *Parser) curTokenIs(t token.TokenType) bool {
