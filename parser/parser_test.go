@@ -345,3 +345,58 @@ func testBranchStatement(
 
 	return true
 }
+
+func TestSingleLabelStatements(t *testing.T) {
+	input := `
+JSR MyLabel
+JSR MySubroutine
+`
+
+	l := lexer.New(input)
+	p := New(l)
+
+	program := p.ParseProgram()
+
+	if program == nil {
+		t.Fatalf("ParseProgram() returned nil")
+	}
+
+	if len(program.Statements) != 2 {
+		t.Fatalf("program.Statements does not contain 2 statements. got=%d", len(program.Statements))
+	}
+
+	tests := []struct {
+		expectedOpcodeLiteral string
+		expectedLiteral       string
+	}{
+		{"JSR", "MyLabel"},
+		{"JSR", "MySubroutine"},
+	}
+
+	for i, tt := range tests {
+		stmt := program.Statements[i]
+		if !testSingleLabelStatement(t, stmt, tt.expectedOpcodeLiteral, tt.expectedLiteral) {
+			return
+		}
+	}
+}
+
+func testSingleLabelStatement(t *testing.T, s ast.Statement, ol string, literal string) bool {
+	if s.TokenLiteral() != ol {
+		t.Errorf("s.TokenLiteral not '%s'. got=%q", ol, s.TokenLiteral())
+		return false
+	}
+
+	sls, ok := s.(*ast.SingleLabelStatement)
+	if !ok {
+		t.Errorf("s not *ast.BranchStatement. got=%T", s)
+		return false
+	}
+
+	if sls.Label.Value != literal {
+		t.Errorf("sls.Label.Value not '%s'. got=%s", literal, sls.Label.Value)
+		return false
+	}
+
+	return true
+}
