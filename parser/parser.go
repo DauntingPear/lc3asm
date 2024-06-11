@@ -147,6 +147,15 @@ func (p *Parser) parseBRStatement() ast.Statement {
 		}
 	}
 
+	if !p.expectPeek(token.IDENT) {
+		fmt.Println("Expected Label")
+		return stmt
+	}
+
+	label := &ast.Label{Token: p.curToken, Value: p.curToken.Literal}
+
+	stmt.Label = label
+
 	return stmt
 }
 
