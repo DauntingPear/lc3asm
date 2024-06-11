@@ -250,11 +250,11 @@ func testTwoRegisterOffsetStatement(t *testing.T, s ast.Statement, ol string, ll
 
 func TestBranchStatements(t *testing.T) {
 	input := `
-BR
-BRn
-BRnzp
-BRp
-BRpzn`
+BR LABEL
+BRn MYLabel
+BRnzp THELabel
+BRp ALabel
+BRpzn SomeLabel`
 
 	l := lexer.New(input)
 	p := New(l)
@@ -274,23 +274,40 @@ BRpzn`
 		expectedNBitValue     bool
 		expectedZBitValue     bool
 		expectedPBitValue     bool
+		expectedLabelLiteral  string
 	}{
-		{"BR", true, true, true},
-		{"BRn", true, false, false},
-		{"BRnzp", true, true, true},
-		{"BRp", false, false, true},
-		{"BRpzn", true, true, true},
+		{"BR", true, true, true, "LABEL"},
+		{"BRn", true, false, false, "MYLabel"},
+		{"BRnzp", true, true, true, "THELabel"},
+		{"BRp", false, false, true, "ALabel"},
+		{"BRpzn", true, true, true, "SomeLabel"},
 	}
 
 	for i, tt := range tests {
 		stmt := program.Statements[i]
-		if !testBranchStatement(t, stmt, tt.expectedOpcodeLiteral, tt.expectedNBitValue, tt.expectedZBitValue, tt.expectedPBitValue) {
+		if !testBranchStatement(
+			t,
+			stmt,
+			tt.expectedOpcodeLiteral,
+			tt.expectedNBitValue,
+			tt.expectedZBitValue,
+			tt.expectedPBitValue,
+			tt.expectedLabelLiteral,
+		) {
 			return
 		}
 	}
 }
 
-func testBranchStatement(t *testing.T, s ast.Statement, ol string, n bool, z bool, p bool) bool {
+func testBranchStatement(
+	t *testing.T,
+	s ast.Statement,
+	ol string,
+	n bool,
+	z bool,
+	p bool,
+	literal string,
+) bool {
 	if s.TokenLiteral() != ol {
 		t.Errorf("s.TokenLiteral not '%s'. got=%q", ol, s.TokenLiteral())
 		return false
@@ -314,6 +331,15 @@ func testBranchStatement(t *testing.T, s ast.Statement, ol string, n bool, z boo
 
 	if b.P != p {
 		t.Errorf("b.P not '%t'. got=%t", p, b.P)
+		return false
+	}
+
+	if b.Label == nil {
+		t.Fatalf("b.Label is nil")
+	}
+
+	if b.Label.Value != literal {
+		t.Errorf("b.Label.Value not '%s'. got=%s", b.Label.Value, literal)
 		return false
 	}
 
