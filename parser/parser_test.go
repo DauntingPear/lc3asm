@@ -461,3 +461,52 @@ func testSingleRegisterStatement(t *testing.T, s ast.Statement, ol string, rl st
 
 	return true
 }
+
+func TestNoArgStatements(t *testing.T) {
+	input := `
+RET
+RTI
+`
+
+	l := lexer.New(input)
+	p := New(l)
+
+	program := p.ParseProgram()
+
+	if program == nil {
+		t.Fatalf("ParseProgram() returned nil")
+	}
+
+	if len(program.Statements) != 2 {
+		t.Fatalf("program.Statements does not contain 2 statements. got=%d", len(program.Statements))
+	}
+
+	tests := []struct {
+		expectedOpcodeLiteral string
+	}{
+		{"RET"},
+		{"RTI"},
+	}
+
+	for i, tt := range tests {
+		stmt := program.Statements[i]
+		if !testNoArgStatement(t, stmt, tt.expectedOpcodeLiteral) {
+			return
+		}
+	}
+}
+
+func testNoArgStatement(t *testing.T, s ast.Statement, ol string) bool {
+	if s.TokenLiteral() != ol {
+		t.Errorf("s.TokenLiteral not '%s'. got=%q", ol, s.TokenLiteral())
+		return false
+	}
+
+	_, ok := s.(*ast.NoArgStatement)
+	if !ok {
+		t.Errorf("s not *ast.ThreeRegisterStatement. got=%T", s)
+		return false
+	}
+
+	return true
+}
