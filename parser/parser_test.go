@@ -247,3 +247,75 @@ func testTwoRegisterOffsetStatement(t *testing.T, s ast.Statement, ol string, ll
 
 	return true
 }
+
+func TestBranchStatements(t *testing.T) {
+	input := `
+BR
+BRn
+BRnzp
+BRp
+BRpzn`
+
+	l := lexer.New(input)
+	p := New(l)
+
+	program := p.ParseProgram()
+
+	if program == nil {
+		t.Fatalf("ParseProgram() returned nil")
+	}
+
+	if len(program.Statements) != 5 {
+		t.Fatalf("program.Statements does not contain 5 statements. got=%d", len(program.Statements))
+	}
+
+	tests := []struct {
+		expectedOpcodeLiteral string
+		expectedNBitValue     bool
+		expectedZBitValue     bool
+		expectedPBitValue     bool
+	}{
+		{"BR", true, true, true},
+		{"BRn", true, false, false},
+		{"BRnzp", true, true, true},
+		{"BRp", false, false, true},
+		{"BRpzn", true, true, true},
+	}
+
+	for i, tt := range tests {
+		stmt := program.Statements[i]
+		if !testBranchStatement(t, stmt, tt.expectedOpcodeLiteral, tt.expectedNBitValue, tt.expectedZBitValue, tt.expectedPBitValue) {
+			return
+		}
+	}
+}
+
+func testBranchStatement(t *testing.T, s ast.Statement, ol string, n bool, z bool, p bool) bool {
+	if s.TokenLiteral() != ol {
+		t.Errorf("s.TokenLiteral not '%s'. got=%q", ol, s.TokenLiteral())
+		return false
+	}
+
+	b, ok := s.(*ast.BranchStatement)
+	if !ok {
+		t.Errorf("s not *ast.BranchStatement. got=%T", s)
+		return false
+	}
+
+	if b.N != n {
+		t.Errorf("b.N not '%t'. got=%t", n, b.N)
+		return false
+	}
+
+	if b.Z != z {
+		t.Errorf("b.Z not '%t'. got=%t", z, b.Z)
+		return false
+	}
+
+	if b.P != p {
+		t.Errorf("b.P not '%t'. got=%t", p, b.P)
+		return false
+	}
+
+	return true
+}
