@@ -160,7 +160,18 @@ func (p *Parser) parseBRStatement() ast.Statement {
 }
 
 func (p *Parser) parseJSRStatement() ast.Statement {
-	var stmt ast.Statement
+	opcode := p.curToken
+
+	stmt := &ast.SingleLabelStatement{Token: opcode}
+
+	if !p.expectPeek(token.IDENT) {
+		fmt.Printf("expected identifier, got=%s", p.curToken.Type)
+		return stmt
+	}
+
+	label := &ast.Label{Token: p.curToken, Value: p.curToken.Literal}
+
+	stmt.Label = label
 
 	return stmt
 }
