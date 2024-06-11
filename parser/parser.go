@@ -103,7 +103,11 @@ func (p *Parser) parseOpcodeSatement() ast.Statement {
 
 // TODO: Write this function
 func (p *Parser) parseNoArgStatement() ast.Statement {
-	return nil
+	opcode := p.curToken
+
+	stmt := &ast.NoArgStatement{Token: opcode}
+
+	return stmt
 }
 
 // TODO: Write this function

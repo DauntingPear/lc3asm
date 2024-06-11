@@ -133,3 +133,10 @@ type SingleRegisterStatement struct {
 
 func (srs *SingleRegisterStatement) statementNode()       {}
 func (srs *SingleRegisterStatement) TokenLiteral() string { return srs.Token.Literal }
+
+type NoArgStatement struct {
+	Token token.Token
+}
+
+func (nas *NoArgStatement) statementNode()       {}
+func (nas *NoArgStatement) TokenLiteral() string { return nas.Token.Literal }
