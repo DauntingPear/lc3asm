@@ -108,7 +108,28 @@ func (p *Parser) parseNoArgStatement() ast.Statement {
 
 // TODO: Write this function
 func (p *Parser) parseSingleRegisterStatement() ast.Statement {
-	return nil
+	opcode := p.curToken
+
+	if !p.expectPeek(token.REGISTER) {
+		fmt.Println("Expected a register token")
+		return nil
+	}
+
+	registerID := string(p.curToken.Literal[1])
+	num, err := strconv.Atoi(registerID)
+	if err != nil {
+		fmt.Println("could not parse r1 number")
+		return nil
+	}
+
+	register := &ast.Register{Token: p.curToken, ID: num}
+
+	stmt := &ast.SingleRegisterStatement{
+		Token:    opcode,
+		Register: register,
+	}
+
+	return stmt
 }
 
 // TODO: Write this function

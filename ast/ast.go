@@ -125,3 +125,11 @@ type SingleLabelStatement struct {
 
 func (sls *SingleLabelStatement) statementNode()       {}
 func (sls *SingleLabelStatement) TokenLiteral() string { return sls.Token.Literal }
+
+type SingleRegisterStatement struct {
+	Token    token.Token
+	Register *Register
+}
+
+func (srs *SingleRegisterStatement) statementNode()       {}
+func (srs *SingleRegisterStatement) TokenLiteral() string { return srs.Token.Literal }
