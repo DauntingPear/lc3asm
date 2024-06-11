@@ -400,3 +400,64 @@ func testSingleLabelStatement(t *testing.T, s ast.Statement, ol string, literal 
 
 	return true
 }
+
+func TestSingleRegisterStatements(t *testing.T) {
+	input := `
+JMP R4
+JSRR R0
+`
+
+	l := lexer.New(input)
+	p := New(l)
+
+	program := p.ParseProgram()
+
+	if program == nil {
+		t.Fatalf("ParseProgram() returned nil")
+	}
+
+	if len(program.Statements) != 2 {
+		t.Fatalf("program.Statements does not contain 2 statements. got=%d", len(program.Statements))
+	}
+
+	tests := []struct {
+		expectedOpcodeLiteral   string
+		expectedRegisterLiteral string
+		expectedRegisterID      int
+	}{
+		{"JMP", "R4", 4},
+		{"JSRR", "R0", 0},
+	}
+
+	for i, tt := range tests {
+		stmt := program.Statements[i]
+		if !testSingleRegisterStatement(t, stmt, tt.expectedOpcodeLiteral, tt.expectedRegisterLiteral, tt.expectedRegisterID) {
+			return
+		}
+	}
+}
+
+func testSingleRegisterStatement(t *testing.T, s ast.Statement, ol string, rl string, rid int) bool {
+	if s.TokenLiteral() != ol {
+		t.Errorf("s.TokenLiteral not '%s'. got=%q", ol, s.TokenLiteral())
+		return false
+	}
+
+	srs, ok := s.(*ast.SingleRegisterStatement)
+	if !ok {
+		t.Errorf("s not *ast.SingleRegisterStatement. got=%T", s)
+		return false
+	}
+
+	if srs.Register.TokenLiteral() != rl {
+		t.Errorf("srs.Register.TokenLiteral() not '%s'. got=%s", rl, srs.Register.TokenLiteral())
+		return false
+	}
+
+	if srs.Register.ID != rid {
+		t.Errorf("srs.Register.ID not '%d'. got=%d", rid, srs.Register.ID)
+		return false
+	}
+
+	return true
+}
