@@ -4,6 +4,7 @@ import "lc3asm-parser/token"
 
 type Node interface {
 	TokenLiteral() string
+	String() string
 }
 
 type Statement interface {
