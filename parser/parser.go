@@ -81,7 +81,8 @@ func (p *Parser) parseDirectiveStatement() ast.Statement {
 		stmt := p.parseIntDirective()
 		return stmt
 	case "ORIG", "FILL": // .ORIG x####, .FILL x#####
-		return nil
+		stmt := p.parseHexDirective()
+		return stmt
 	case "END": // .END
 		return nil
 	case "STRINGZ": // .STRINGZ "String here"
@@ -111,6 +112,28 @@ func (p *Parser) parseIntDirective() ast.Statement {
 	stmt := &ast.IntegerDirectiveStatement{
 		Token: directive,
 		Value: num,
+	}
+
+	return stmt
+}
+
+func (p *Parser) parseHexDirective() ast.Statement {
+	directive := p.curToken
+
+	if !p.expectPeek(token.HEX) {
+		return nil
+	}
+
+	num, err := strconv.ParseInt(p.curToken.Literal[1:], 16, 64)
+	fmt.Println(p.curToken.Literal[1:])
+	fmt.Println(num)
+	if err != nil {
+		return nil
+	}
+
+	stmt := &ast.HexDirectiveStatement{
+		Token: directive,
+		Value: int(num),
 	}
 
 	return stmt

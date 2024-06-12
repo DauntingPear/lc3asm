@@ -148,3 +148,11 @@ type IntegerDirectiveStatement struct {
 
 func (ids *IntegerDirectiveStatement) statementNode()       {}
 func (ids *IntegerDirectiveStatement) TokenLiteral() string { return ids.Token.Literal }
+
+type HexDirectiveStatement struct {
+	Token token.Token
+	Value int
+}
+
+func (hds *HexDirectiveStatement) statementNode()       {}
+func (hds *HexDirectiveStatement) TokenLiteral() string { return hds.Token.Literal }
