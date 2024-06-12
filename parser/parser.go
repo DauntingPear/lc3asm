@@ -127,8 +127,6 @@ func (p *Parser) parseHexDirective() ast.Statement {
 	}
 
 	num, err := strconv.ParseInt(p.curToken.Literal[1:], 16, 64)
-	fmt.Println(p.curToken.Literal[1:])
-	fmt.Println(num)
 	if err != nil {
 		return nil
 	}
