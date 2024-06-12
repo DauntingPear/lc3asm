@@ -171,3 +171,18 @@ type StringDirectiveStatement struct {
 
 func (sds *StringDirectiveStatement) statementNode()       {}
 func (sds *StringDirectiveStatement) TokenLiteral() string { return sds.Token.Literal }
+
+type HexTrapStatement struct {
+	Token token.Token
+	Value int
+}
+
+func (ht *HexTrapStatement) statementNode()       {}
+func (ht *HexTrapStatement) TokenLiteral() string { return ht.Token.Literal }
+
+type NoArgTrapStatement struct {
+	Token token.Token
+}
+
+func (nat *NoArgTrapStatement) statementNode()       {}
+func (nat *NoArgTrapStatement) TokenLiteral() string { return nat.Token.Literal }

@@ -168,7 +168,59 @@ func (p *Parser) parseStringDirective() ast.Statement {
 
 // TODO: Write this function
 func (p *Parser) parseTrapStatement() ast.Statement {
-	return nil
+	switch p.curToken.Literal {
+	case "TRAP":
+		stmt := p.parseHexTrap()
+		return stmt
+	case "GETC", "OUT", "PUTS", "IN", "PUTSP", "HALT":
+		stmt := p.parseTrap()
+		return stmt
+	default:
+		return nil
+	}
+}
+
+// Parses TRAP x## codes:
+// - TRAP x22
+func (p *Parser) parseHexTrap() ast.Statement {
+	code := p.curToken
+
+	if !p.expectPeek(token.HEX) {
+		return nil
+	}
+
+	num, err := strconv.ParseInt(p.curToken.Literal[1:], 16, 64)
+	if err != nil {
+		return nil
+	}
+
+	stmt := &ast.HexTrapStatement{
+		Token: code,
+		Value: int(num),
+	}
+
+	return stmt
+}
+
+// Parses TRAP codes:
+//
+// - GETC ("Get character into R0 - no echo")
+//
+// - OUT ("Print R0 character")
+//
+// - PUTS ("Print R0 as string")
+//
+// - IN ("Get char into R0, with prompt & echo")
+//
+// - HALT ("Halt program")
+func (p *Parser) parseTrap() ast.Statement {
+	code := p.curToken
+
+	stmt := &ast.NoArgTrapStatement{
+		Token: code,
+	}
+
+	return stmt
 }
 
 func (p *Parser) parseOpcodeSatement() ast.Statement {
