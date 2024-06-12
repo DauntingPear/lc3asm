@@ -602,3 +602,34 @@ ADD`
 	}
 
 }
+
+func TestString(t *testing.T) {
+	input := `.STRINGZ "this is a string"
+"this is another string"`
+
+	tests := []struct {
+		expectedType    token.TokenType
+		expectedLiteral string
+	}{
+		{token.PERIOD, "."},
+		{token.DIRECTIVE, "STRINGZ"},
+		{token.STRING, "this is a string"},
+
+		{token.STRING, "this is another string"},
+	}
+
+	l := New(input)
+
+	for i, tt := range tests {
+		tok := l.NextToken()
+
+		if tok.Type != tt.expectedType {
+			t.Errorf("tests[%d] - tokentype wrong. expected=%q, got=%q", i, tt.expectedType, tok.Type)
+		}
+
+		if tok.Literal != tt.expectedLiteral {
+			t.Errorf("tests[%d] - literal wrong. expected=%q, got=%q", i, tt.expectedLiteral, tok.Literal)
+		}
+	}
+
+}
