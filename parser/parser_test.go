@@ -579,3 +579,58 @@ func testIntegerDirectiveStatement(t *testing.T, s ast.Statement, dl string, v i
 
 	return true
 }
+
+func TestHexDirectiveStatements(t *testing.T) {
+	input := `
+.FILL x300
+.ORIG x2000
+`
+
+	l := lexer.New(input)
+	p := New(l)
+
+	program := p.ParseProgram()
+
+	if program == nil {
+		t.Fatalf("ParseProgram() returned nil")
+	}
+
+	if len(program.Statements) != 2 {
+		t.Fatalf("program.Statements does not contain 2 statements. got=%d", len(program.Statements))
+	}
+
+	tests := []struct {
+		expectedDirectiveLiteral string
+		expectedValue            int
+	}{
+		{"FILL", 768},
+		{"ORIG", 8192},
+	}
+
+	for i, tt := range tests {
+		stmt := program.Statements[i]
+		if !testHexDirectiveStatement(t, stmt, tt.expectedDirectiveLiteral, tt.expectedValue) {
+			return
+		}
+	}
+}
+
+func testHexDirectiveStatement(t *testing.T, s ast.Statement, dl string, v int) bool {
+	if s.TokenLiteral() != dl {
+		t.Errorf("s.TokenLiteral not '%s'. got=%q", dl, s.TokenLiteral())
+		return false
+	}
+
+	hds, ok := s.(*ast.HexDirectiveStatement)
+	if !ok {
+		t.Errorf("s not *ast.HexDirectiveStatement. got=%T", s)
+		return false
+	}
+
+	if hds.Value != v {
+		t.Errorf("ids.Value not '%d'. got=%d", v, hds.Value)
+		return false
+	}
+
+	return true
+}
