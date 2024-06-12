@@ -76,7 +76,44 @@ func (p *Parser) parseStatement() ast.Statement {
 
 // TODO: Write this function
 func (p *Parser) parseDirectiveStatement() ast.Statement {
-	return nil
+	switch p.curToken.Literal {
+	case "BLKW": // .BLKW ####
+		stmt := p.parseIntDirective()
+		return stmt
+	case "ORIG", "FILL": // .ORIG x####, .FILL x#####
+		return nil
+	case "END": // .END
+		return nil
+	case "STRINGZ": // .STRINGZ "String here"
+		return nil
+	default:
+		return nil
+	}
+
+}
+
+func (p *Parser) parseIntDirective() ast.Statement {
+	directive := p.curToken
+
+	if !p.expectPeek(token.HASH) {
+		return nil
+	}
+
+	if !p.expectPeek(token.INT) {
+		return nil
+	}
+
+	num, err := strconv.Atoi(p.curToken.Literal)
+	if err != nil {
+		return nil
+	}
+
+	stmt := &ast.IntegerDirectiveStatement{
+		Token: directive,
+		Value: num,
+	}
+
+	return stmt
 }
 
 // TODO: Write this function

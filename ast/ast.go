@@ -140,3 +140,11 @@ type NoArgStatement struct {
 
 func (nas *NoArgStatement) statementNode()       {}
 func (nas *NoArgStatement) TokenLiteral() string { return nas.Token.Literal }
+
+type IntegerDirectiveStatement struct {
+	Token token.Token
+	Value int
+}
+
+func (ids *IntegerDirectiveStatement) statementNode()       {}
+func (ids *IntegerDirectiveStatement) TokenLiteral() string { return ids.Token.Literal }
