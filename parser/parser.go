@@ -76,6 +76,7 @@ func (p *Parser) parseStatement() ast.Statement {
 
 // TODO: Write this function
 func (p *Parser) parseDirectiveStatement() ast.Statement {
+	defer untrace(trace("parseDirectiveStatement"))
 	switch p.curToken.Literal {
 	case "BLKW": // .BLKW ####
 		stmt := p.parseIntDirective()
@@ -168,6 +169,7 @@ func (p *Parser) parseStringDirective() ast.Statement {
 
 // TODO: Write this function
 func (p *Parser) parseTrapStatement() ast.Statement {
+	defer untrace(trace("parseTrapStatement"))
 	switch p.curToken.Literal {
 	case "TRAP":
 		stmt := p.parseHexTrap()
@@ -224,6 +226,7 @@ func (p *Parser) parseTrap() ast.Statement {
 }
 
 func (p *Parser) parseOpcodeSatement() ast.Statement {
+	defer untrace(trace("parseOpcodeStatement"))
 	switch p.curToken.Literal {
 	case "ADD", "AND":
 		stmt := p.parseOperationOpcodeStatement()
