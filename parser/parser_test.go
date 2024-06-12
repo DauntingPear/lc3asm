@@ -524,3 +524,58 @@ func testNoArgStatement(t *testing.T, s ast.Statement, ol string) bool {
 
 	return true
 }
+
+func TestIntegerDirectiveStatements(t *testing.T) {
+	input := `
+.BLKW #20
+.BLKW #1
+`
+
+	l := lexer.New(input)
+	p := New(l)
+
+	program := p.ParseProgram()
+
+	if program == nil {
+		t.Fatalf("ParseProgram() returned nil")
+	}
+
+	if len(program.Statements) != 2 {
+		t.Fatalf("program.Statements does not contain 2 statements. got=%d", len(program.Statements))
+	}
+
+	tests := []struct {
+		expectedDirectiveLiteral string
+		expectedValue            int
+	}{
+		{"BLKW", 20},
+		{"BLKW", 1},
+	}
+
+	for i, tt := range tests {
+		stmt := program.Statements[i]
+		if !testIntegerDirectiveStatement(t, stmt, tt.expectedDirectiveLiteral, tt.expectedValue) {
+			return
+		}
+	}
+}
+
+func testIntegerDirectiveStatement(t *testing.T, s ast.Statement, dl string, v int) bool {
+	if s.TokenLiteral() != dl {
+		t.Errorf("s.TokenLiteral not '%s'. got=%q", dl, s.TokenLiteral())
+		return false
+	}
+
+	ids, ok := s.(*ast.IntegerDirectiveStatement)
+	if !ok {
+		t.Errorf("s not *ast.IntegerDirectiveStatement. got=%T", s)
+		return false
+	}
+
+	if ids.Value != v {
+		t.Errorf("ids.Value not '%d'. got=%d", v, ids.Value)
+		return false
+	}
+
+	return true
+}
