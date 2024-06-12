@@ -634,3 +634,50 @@ func testHexDirectiveStatement(t *testing.T, s ast.Statement, dl string, v int) 
 
 	return true
 }
+
+func TestNoArgDirectives(t *testing.T) {
+	input := `
+.END
+`
+
+	l := lexer.New(input)
+	p := New(l)
+
+	program := p.ParseProgram()
+
+	if program == nil {
+		t.Fatalf("ParseProgram() returned nil")
+	}
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("program.Statements does not contain 1 statements. got=%d", len(program.Statements))
+	}
+
+	tests := []struct {
+		expectedDirectiveLiteral string
+	}{
+		{"END"},
+	}
+
+	for i, tt := range tests {
+		stmt := program.Statements[i]
+		if !testNoArgDirective(t, stmt, tt.expectedDirectiveLiteral) {
+			return
+		}
+	}
+}
+
+func testNoArgDirective(t *testing.T, s ast.Statement, dl string) bool {
+	if s.TokenLiteral() != dl {
+		t.Errorf("s.TokenLiteral not '%s'. got=%q", dl, s.TokenLiteral())
+		return false
+	}
+
+	_, ok := s.(*ast.NoArgDirective)
+	if !ok {
+		t.Errorf("s not *ast.NoArgDirective. got=%T", s)
+		return false
+	}
+
+	return true
+}
