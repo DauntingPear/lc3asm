@@ -156,3 +156,10 @@ type HexDirectiveStatement struct {
 
 func (hds *HexDirectiveStatement) statementNode()       {}
 func (hds *HexDirectiveStatement) TokenLiteral() string { return hds.Token.Literal }
+
+type NoArgDirective struct {
+	Token token.Token
+}
+
+func (nad *NoArgDirective) statementNode()       {}
+func (nad *NoArgDirective) TokenLiteral() string { return nad.Token.Literal }

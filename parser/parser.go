@@ -84,7 +84,8 @@ func (p *Parser) parseDirectiveStatement() ast.Statement {
 		stmt := p.parseHexDirective()
 		return stmt
 	case "END": // .END
-		return nil
+		stmt := p.parseNoArgDirective()
+		return stmt
 	case "STRINGZ": // .STRINGZ "String here"
 		return nil
 	default:
@@ -134,6 +135,16 @@ func (p *Parser) parseHexDirective() ast.Statement {
 	stmt := &ast.HexDirectiveStatement{
 		Token: directive,
 		Value: int(num),
+	}
+
+	return stmt
+}
+
+func (p *Parser) parseNoArgDirective() ast.Statement {
+	directive := p.curToken
+
+	stmt := &ast.NoArgDirective{
+		Token: directive,
 	}
 
 	return stmt
