@@ -27,6 +27,7 @@ const (
 	DIRECTIVE = "DIRECTIVE"
 	TRAP      = "TRAP"
 	COMMENT   = "COMMENT"
+	STRING    = "STRING"
 
 	// Number Types
 	INT = "INT"
