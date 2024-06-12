@@ -734,3 +734,115 @@ func testStringDirectiveStatement(t *testing.T, s ast.Statement, dl string, sl s
 
 	return true
 }
+
+func TestHexTrapStatements(t *testing.T) {
+	input := `
+TRAP x22
+TRAP x0
+`
+
+	l := lexer.New(input)
+	p := New(l)
+
+	program := p.ParseProgram()
+
+	if program == nil {
+		t.Fatalf("ParseProgram() returned nil")
+	}
+
+	if len(program.Statements) != 2 {
+		t.Fatalf("program.Statements does not contain 2 statements. got=%d", len(program.Statements))
+	}
+
+	tests := []struct {
+		expectedTrapLiteral string
+		expectedValue       int
+	}{
+		{"TRAP", 34},
+		{"TRAP", 0},
+	}
+
+	for i, tt := range tests {
+		stmt := program.Statements[i]
+		if !testHexTrapStatement(t, stmt, tt.expectedTrapLiteral, tt.expectedValue) {
+			return
+		}
+	}
+}
+
+func testHexTrapStatement(t *testing.T, s ast.Statement, dl string, v int) bool {
+	if s.TokenLiteral() != dl {
+		t.Errorf("s.TokenLiteral not '%s'. got=%q", dl, s.TokenLiteral())
+		return false
+	}
+
+	ht, ok := s.(*ast.HexTrapStatement)
+	if !ok {
+		t.Errorf("s not *ast.HexTrapStatement. got=%T", s)
+		return false
+	}
+
+	if ht.Value != v {
+		t.Errorf("sds.Value not '%d', got=%d", v, ht.Value)
+		return false
+	}
+
+	return true
+}
+
+func TestNoArgTrapStatements(t *testing.T) {
+	input := `
+GETC
+OUT
+PUTS
+IN
+PUTSP
+HALT
+`
+
+	l := lexer.New(input)
+	p := New(l)
+
+	program := p.ParseProgram()
+
+	if program == nil {
+		t.Fatalf("ParseProgram() returned nil")
+	}
+
+	if len(program.Statements) != 6 {
+		t.Fatalf("program.Statements does not contain 6 statements. got=%d", len(program.Statements))
+	}
+
+	tests := []struct {
+		expectedTrapLiteral string
+	}{
+		{"GETC"},
+		{"OUT"},
+		{"PUTS"},
+		{"IN"},
+		{"PUTSP"},
+		{"HALT"},
+	}
+
+	for i, tt := range tests {
+		stmt := program.Statements[i]
+		if !testNoArgTrapStatement(t, stmt, tt.expectedTrapLiteral) {
+			return
+		}
+	}
+}
+
+func testNoArgTrapStatement(t *testing.T, s ast.Statement, dl string) bool {
+	if s.TokenLiteral() != dl {
+		t.Errorf("s.TokenLiteral not '%s'. got=%q", dl, s.TokenLiteral())
+		return false
+	}
+
+	_, ok := s.(*ast.NoArgTrapStatement)
+	if !ok {
+		t.Errorf("s not *ast.NoArgTrapStatement. got=%T", s)
+		return false
+	}
+
+	return true
+}
