@@ -681,3 +681,56 @@ func testNoArgDirective(t *testing.T, s ast.Statement, dl string) bool {
 
 	return true
 }
+
+func TestStringDirectiveStatements(t *testing.T) {
+	input := `
+.STRINGZ "This is a string"
+`
+
+	l := lexer.New(input)
+	p := New(l)
+
+	program := p.ParseProgram()
+
+	if program == nil {
+		t.Fatalf("ParseProgram() returned nil")
+	}
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("program.Statements does not contain 1 statements. got=%d", len(program.Statements))
+	}
+
+	tests := []struct {
+		expectedDirectiveLiteral string
+		expectedStringLiteral    string
+	}{
+		{"STRINGZ", "This is a string"},
+	}
+
+	for i, tt := range tests {
+		stmt := program.Statements[i]
+		if !testStringDirectiveStatement(t, stmt, tt.expectedDirectiveLiteral, tt.expectedStringLiteral) {
+			return
+		}
+	}
+}
+
+func testStringDirectiveStatement(t *testing.T, s ast.Statement, dl string, sl string) bool {
+	if s.TokenLiteral() != dl {
+		t.Errorf("s.TokenLiteral not '%s'. got=%q", dl, s.TokenLiteral())
+		return false
+	}
+
+	sds, ok := s.(*ast.StringDirectiveStatement)
+	if !ok {
+		t.Errorf("s not *ast.StringDirectiveStatement. got=%T", s)
+		return false
+	}
+
+	if sds.Value != sl {
+		t.Errorf("sds.Value not '%s', got=%s", sl, sds.Value)
+		return false
+	}
+
+	return true
+}
