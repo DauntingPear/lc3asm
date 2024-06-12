@@ -87,7 +87,8 @@ func (p *Parser) parseDirectiveStatement() ast.Statement {
 		stmt := p.parseNoArgDirective()
 		return stmt
 	case "STRINGZ": // .STRINGZ "String here"
-		return nil
+		stmt := p.parseStringDirective()
+		return stmt
 	default:
 		return nil
 	}
@@ -145,6 +146,23 @@ func (p *Parser) parseNoArgDirective() ast.Statement {
 
 	stmt := &ast.NoArgDirective{
 		Token: directive,
+	}
+
+	return stmt
+}
+
+func (p *Parser) parseStringDirective() ast.Statement {
+	directive := p.curToken
+
+	if !p.expectPeek(token.STRING) {
+		return nil
+	}
+
+	string := p.curToken.Literal
+
+	stmt := &ast.StringDirectiveStatement{
+		Token: directive,
+		Value: string,
 	}
 
 	return stmt

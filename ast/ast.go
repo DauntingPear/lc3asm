@@ -163,3 +163,11 @@ type NoArgDirective struct {
 
 func (nad *NoArgDirective) statementNode()       {}
 func (nad *NoArgDirective) TokenLiteral() string { return nad.Token.Literal }
+
+type StringDirectiveStatement struct {
+	Token token.Token
+	Value string
+}
+
+func (sds *StringDirectiveStatement) statementNode()       {}
+func (sds *StringDirectiveStatement) TokenLiteral() string { return sds.Token.Literal }
