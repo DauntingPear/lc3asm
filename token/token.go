@@ -60,6 +60,8 @@ var keywords = map[string]TokenType{
 	// Directives
 	"END":     DIRECTIVE,
 	"ORIG":    DIRECTIVE,
+	"end":     DIRECTIVE,
+	"orig":    DIRECTIVE,
 	"FILL":    DIRECTIVE,
 	"BLKW":    DIRECTIVE,
 	"STRINGZ": DIRECTIVE,

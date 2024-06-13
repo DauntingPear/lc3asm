@@ -61,30 +61,106 @@ func (p *Parser) ParseProgram() *ast.Program {
 func (p *Parser) parseStatement() ast.Statement {
 	switch p.curToken.Type {
 	case token.OPCODE:
+		defer untrace(trace("parseOpcode"))
 		stmt := p.parseOpcodeSatement()
 		return stmt
-	case token.DIRECTIVE:
+	case token.PERIOD:
+		defer untrace(trace("parseDirective"))
 		stmt := p.parseDirectiveStatement()
 		return stmt
 	case token.TRAP:
+		defer untrace(trace("parseTrap"))
 		stmt := p.parseTrapStatement()
+		return stmt
+	case token.IDENT:
+		defer untrace(trace("parseIdent"))
+		stmt := p.parseIdent()
 		return stmt
 	default:
 		return nil
 	}
 }
 
+func (p *Parser) parseIdent() ast.Statement {
+	label := p.curToken
+
+	// If next token is an IDENT
+	if p.peekTokenIs(token.IDENT) {
+		// TODO: Add some error here
+		return nil
+	}
+
+	p.nextToken() // move current token off of IDENT label
+
+	// so a loop cannot occur here
+	// need to find way to differentiate opcodes, .FILL, and subroutines.
+	// subroutines do not need : to work, as indentation can be placed anywhere
+	// perhaps only enforce or recognize indentation if a : proceeds it
+	// This would require a special parseStatement function, could compose parseStatement()
+	// with a switch
+	innerStmt := p.parseIdentStatement()
+
+	stmt := &ast.IdentifierLabel{
+		Token: label,
+		Label: &ast.Label{
+			Token: label,
+			Value: label.Literal,
+		},
+
+		Stmt: innerStmt,
+	}
+
+	return stmt
+}
+
+// LABEL ADD R5,R5,R5  -- Opcode example
+// MyLabel .FILL #213 -- Directive Example
+// Subroutine: -- Subroutine example
+func (p *Parser) parseIdentStatement() ast.Statement {
+	switch p.curToken.Type {
+		case token.COLON, token.INDENT:
+			defer untrace(trace("parseBlock"))
+			stmt := p.parseBlockStatement()
+			return stmt
+		default:
+			stmt := p.parseStatement()
+			return stmt
+	}
+}
+
+func (p *Parser) parseBlockStatement() ast.Statement {
+	var stmt ast.BlockStatement
+	tok := p.curToken
+	stmt.Token = tok
+
+	if !p.expectPeek(token.INDENT) {
+		fmt.Println("IDENT NOT FOUND", p.peekToken)
+		return &stmt
+	}
+
+	stmt.Statments = []ast.Statement{}
+
+	for !p.curTokenIs(token.DEDENT) {
+		p.nextToken()
+		stmt.Statments = append(stmt.Statments, p.parseStatement())
+	}
+
+	return &stmt
+}
+
 // TODO: Write this function
 func (p *Parser) parseDirectiveStatement() ast.Statement {
-	defer untrace(trace("parseDirectiveStatement"))
+	if !p.expectPeek(token.DIRECTIVE) {
+		return nil
+	}
 	switch p.curToken.Literal {
 	case "BLKW": // .BLKW ####
 		stmt := p.parseIntDirective()
 		return stmt
-	case "ORIG", "FILL": // .ORIG x####, .FILL x#####
+	case "ORIG", "FILL", "orig": // .ORIG x####, .FILL x#####
 		stmt := p.parseHexDirective()
 		return stmt
-	case "END": // .END
+	case "END", "end": // .END
 		stmt := p.parseNoArgDirective()
 		return stmt
 	case "STRINGZ": // .STRINGZ "String here"
@@ -169,7 +245,6 @@ func (p *Parser) parseStringDirective() ast.Statement {
 
 // TODO: Write this function
 func (p *Parser) parseTrapStatement() ast.Statement {
-	defer untrace(trace("parseTrapStatement"))
 	switch p.curToken.Literal {
 	case "TRAP":
 		stmt := p.parseHexTrap()
@@ -226,7 +301,6 @@ func (p *Parser) parseTrap() ast.Statement {
 }
 
 func (p *Parser) parseOpcodeSatement() ast.Statement {
-	defer untrace(trace("parseOpcodeStatement"))
 	switch p.curToken.Literal {
 	case "ADD", "AND":
 		stmt := p.parseOperationOpcodeStatement()
@@ -259,9 +333,12 @@ func (p *Parser) parseOpcodeSatement() ast.Statement {
 
 // TODO: Write this function
 func (p *Parser) parseNoArgStatement() ast.Statement {
+	printDeferred()
 	opcode := p.curToken
 
 	stmt := &ast.NoArgStatement{Token: opcode}
+
+	deferPrint(stmt.String())
 
 	return stmt
 }
@@ -372,6 +449,9 @@ func (p *Parser) peekTokenIs(t token.TokenType) bool {
 }
 
 func (p *Parser) expectPeek(t token.TokenType) bool {
+	if p.peekTokenIs(token.COMMENT) {
+		p.nextToken()
+	}
 	if p.peekTokenIs(t) {
 		p.nextToken()
 		return true
@@ -514,7 +594,11 @@ func (p *Parser) parseTwoRegisterStatement() ast.Statement {
 }
 
 func (p *Parser) parseOperationOpcodeStatement() ast.Statement {
+	defer printDeferred()
 	opcodeToken := p.curToken
+
+	deferPrint(opcodeToken.Literal)
+	deferPrint(" ")
 
 	if !p.expectPeek(token.REGISTER) {
 		return nil
@@ -526,11 +610,14 @@ func (p *Parser) parseOperationOpcodeStatement() ast.Statement {
 		return nil
 	}
 
+
 	dataRegister := &ast.Register{Token: p.curToken, ID: num}
+	deferPrint(dataRegister.String())
 
 	if !p.expectPeek(token.COMMA) {
 		return nil
 	}
+	deferPrint(",")
 
 	if !p.expectPeek(token.REGISTER) {
 		return nil
@@ -542,22 +629,26 @@ func (p *Parser) parseOperationOpcodeStatement() ast.Statement {
 		return nil
 	}
 
+
 	sourceRegister := &ast.Register{Token: p.curToken, ID: num}
+	deferPrint(sourceRegister.String())
 
 	if !p.expectPeek(token.COMMA) {
 		return nil
 	}
+	deferPrint(",")
 
 	if p.peekTokenIs(token.HASH) {
+		deferPrint("#")
 		p.nextToken() // consume above checked token
 		if !p.expectPeek(token.INT) {
 			return nil
 		}
-		registerID = string(p.curToken.Literal[1])
-		num, err = strconv.Atoi(registerID)
+		num, err = strconv.Atoi(p.curToken.Literal)
 		if err != nil {
 			return nil
 		}
+		deferPrint(fmt.Sprintf("%d", num))
 		// int logic
 		stmt := &ast.TwoRegisterImmediate{
 			Token:          opcodeToken,
@@ -577,6 +668,7 @@ func (p *Parser) parseOperationOpcodeStatement() ast.Statement {
 			return nil
 		}
 		sourceRegister2 := &ast.Register{Token: p.curToken, ID: num}
+		deferPrint(sourceRegister2.String())
 
 		stmt := &ast.ThreeRegisterStatement{
 			Token:           opcodeToken,

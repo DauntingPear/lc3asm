@@ -110,14 +110,16 @@ func isLetter(ch byte) bool {
 }
 
 func (l *Lexer) skipWhitespace() {
-	for l.ch == ' ' || l.ch == '\n' || l.ch == '\r' {
+	for l.ch == ' ' || l.ch == '\n' || l.ch == '\r' || l.ch == '\t' {
 		l.readChar()
 	}
 }
 
 // Read indentation characters
 func (l *Lexer) readIndentation() token.Token {
-	l.readChar()
+	for l.ch == '\n' {
+		l.readChar()
+	}
 	indents := 0
 
 	// Consumes tab or spaces for counting indentation levels
@@ -130,7 +132,7 @@ func (l *Lexer) readIndentation() token.Token {
 
 	// Checks if indentation has decreased
 	if indents < l.indentation {
-		l.indentation = l.indentation - indents
+		l.indentation = l.indentation - (l.indentation - indents)
 		tok.Type = token.DEDENT
 		tok.Literal = "DEDENT"
 		return tok
@@ -165,6 +167,14 @@ func (l *Lexer) peekChar() byte {
 		return 0
 	} else {
 		return l.input[l.readPosition]
+	}
+}
+
+func (l *Lexer) prevChar() byte {
+	if l.position <= 0 {
+		return 0
+	} else {
+		return l.input[l.position - 1]
 	}
 }
 

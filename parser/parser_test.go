@@ -846,3 +846,112 @@ func testNoArgTrapStatement(t *testing.T, s ast.Statement, dl string) bool {
 
 	return true
 }
+
+func TestIdentifierLabelStatement(t *testing.T) {
+	input := `
+Subroutine: 						; Parse Ident -> Parse Subroutine (determined by ':')
+	NOT R5,R3 						; Parse Opcode
+	ADD R4,R5,R3 					; Parse Opcode
+	Subroutine_Two:				; Parse Ident -> Parse Subroutine (determined by ':')
+		ADD R4,R0,R0				; Parse Opcode
+		RET									; Parse Opcode
+	RET										; End Subroutine -> Parse Opcode
+.END										; End Subroutine -> Parse Directive
+	`
+input = `
+;;+------------------------------------------------------------------------------+
+;;|                                                                              |
+;;|  Author: Adrian Brady                                                        |
+;;|  Date: 04/01/2024                                                            |
+;;|  Purpose: Breakout Game Lab for Computer Engineering class spring 2024 MATC. |
+;;|                                                                              |
+;;+------------------------------------------------------------------------------+
+
+;;+------------------------------+
+;;|       Initialization         |
+;;+------------------------------+
+.orig x3000
+START:
+  ; Reset Game values
+  JSR ResetGameSR
+
+  ; Initial Game Setup and Frame Buffer Initialization
+  ; Preconditions: None
+  ; Postconditions: Video buffer filled with black pixels, R0/R1/R4/R6 preserved
+  JSR InitFrameSR
+
+  ; Initial boundary and Gameplay Objects Drawing
+  ; Preconditions: None
+  ; Postconditions: Draws game boundaries, initializes game environment,
+  ; draws ball. Register returns not considered. R7 is return address.
+  JSR InitializeGameSR
+
+  ; Main Game loop
+  ; Preconditions: None
+  ; Postconditions: End of game, program has finished
+  JSR GameLoopSR
+
+HALT
+
+
+;;+------------------------------+
+;;|       Game Init Section      |
+;;+------------------------------+
+
+;----------------------------
+;; Resets game constants
+;----------------------------
+RESET_RET .FILL 0
+ResetGameSR:
+  ST R7,RESET_RET
+  AND R0,R0,#0
+  ST R0,BRICK_COLOR
+  ST R0,WALL_COLOR
+  ADD R0,R0,#2
+  ST R0,BRICK_COL
+  LD R0,ZERO
+  ADD R0,R0,#5
+  ST R0,BALL_X
+  ST R0,BALL_Y
+  LD R0,ZERO
+  ADD R0,R0,#1
+  ST R0,BALL_Y_DIR
+  ST R0,BALL_X_DIR
+  ADD R0,R0,#2
+  ST R0,Bricks_Remaining
+  LD R0,ZERO
+  ADD R0,R0,#8
+  ST R0,PADDLE_POS
+  LD R0,ZERO
+  ST R0,LEFT_COLOR
+  ST R0,RIGHT_COLOR
+  LD R7,RESET_RET
+  RET
+`
+
+	l := lexer.New(input)
+	p := New(l)
+
+	program := p.ParseProgram()
+
+	if program == nil {
+		t.Fatalf("ParseProgram() returned nil")
+	}
+
+	t.Errorf("Program: %s", program.String())
+}
+
+func testIdentifierLabel(t *testing.T, s ast.Statement, dl string) bool {
+	if s.TokenLiteral() != dl {
+		t.Errorf("s.TokenLiteral not '%s'. got=%q", dl, s.TokenLiteral())
+		return false
+	}
+
+	_, ok := s.(*ast.NoArgTrapStatement)
+	if !ok {
+		t.Errorf("s not *ast.NoArgTrapStatement. got=%T", s)
+		return false
+	}
+
+	return true
+}

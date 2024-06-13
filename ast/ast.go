@@ -37,7 +37,11 @@ func (p *Program) String() string {
 	var out bytes.Buffer
 
 	for _, s := range p.Statements {
-		out.WriteString(s.String())
+		if s != nil {
+			out.WriteString(s.String() + "\n")
+		} else {
+			out.WriteString("Nil")
+		}
 	}
 
 	return out.String()
@@ -343,6 +347,71 @@ func (nat *NoArgTrapStatement) String() string {
 	var out bytes.Buffer
 
 	out.WriteString(nat.TokenLiteral())
+
+	return out.String()
+}
+
+type LabelBlockStatement struct {
+	Token   token.Token
+	Literal string
+	Block   *BlockStatement
+}
+
+func (lbs *LabelBlockStatement) statementNode()       {}
+func (lbs *LabelBlockStatement) TokenLiteral() string { return lbs.Token.Literal }
+func (lbs *LabelBlockStatement) String() string {
+	var out bytes.Buffer
+
+	out.WriteString(lbs.TokenLiteral())
+
+	if lbs.Block != nil {
+		out.WriteString(lbs.Block.String())
+	}
+
+	return out.String()
+}
+
+type BlockStatement struct {
+	Token     token.Token // The ':' token after Label:
+	Statments []Statement
+}
+
+func (bs *BlockStatement) statementNode()       {}
+func (bs *BlockStatement) TokenLiteral() string { return bs.Token.Literal }
+func (bs *BlockStatement) String() string {
+	var out bytes.Buffer
+
+	for _, s := range bs.Statments {
+		if s != nil {
+			out.WriteString(s.String() + "\n")
+		}
+	}
+
+	return out.String()
+}
+
+type IdentifierLabel struct {
+	Token token.Token
+	Label *Label
+	Stmt  Statement
+}
+
+func (il *IdentifierLabel) statementNode()       {}
+func (il *IdentifierLabel) TokenLiteral() string { return il.Token.Literal }
+func (il *IdentifierLabel) String() string {
+	var out bytes.Buffer
+
+	if il.TokenLiteral() != "" {
+		out.WriteString(il.TokenLiteral() + " ")
+	} else {
+		out.WriteString("Empty Literal")
+	}
+
+	if il.Stmt != nil {
+		out.WriteString(il.Stmt.String())
+	} else {
+		out.WriteString("Nil")
+	}
 
 	return out.String()
 }
